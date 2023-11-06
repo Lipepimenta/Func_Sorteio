@@ -1,0 +1,86 @@
+{!*$HEAD*}
+{!include file="default/head.tpl" template_type="report"}
+<script type="text/javascript">
+//<![CDATA[
+// funcao a ser chamanda na inicializacao
+	// validacao do formulario
+	var objValidator = new Object();
+	nhJax.Utils.ini = function () {
+		objValidator.MsgsStyle = nhMsgs.getMsgStyle();
+		objValidator.objMessages = nhMsgs.getMsgValidacao();
+		objValidator.Form = new Object({
+			element: $('form-perfil-pesquisar'),
+			action: 'operadorfilialc/pesquisarFuncionario',
+			submit: 1,
+			ajax: 0
+		});
+		objValidator.ObjCampos = new Object([
+			{ id: 'info-perfil-nome', must: 1 }
+		]);
+	}
+	var objMessages = nhMsgs.getMsgValidacao();
+
+	function send() {
+		nhJax.Utils.validaForm(objValidator);
+	}
+
+	Event.observe(window, 'load', function () {
+		nhJax.Utils.ini();
+	});
+</script>
+<div id="content">
+	<div id="actions">
+		<h2><span>Sorteios</span></h2>
+		<div id="msg" class="msgDefault" {!if $msg == ""} style="display: none;" {!/if}>
+			<div class="{!$classMsg}">
+				<h3>{!if $classMsg == 'msgOk'}Sucesso{!elseif $classMsg == 'msgError'}Erro{!else}Alerta{!/if}</h3>
+				<p>{!if $msg != ''}{!$msg}{!else}&nbsp;{!/if}</p>
+			</div>
+		</div>
+
+		{!$abas}
+
+		<form id="form-perfil-pesquisar" action="" method="post" class="formMain formSearch wsizep100" onsubmit="return false;">
+			<fieldset>
+				<legend>Sorteio</legend>
+				<label for="info-perfil-nome" class="wsize030 wsizep100">
+					<span class="nameField"> Pesquisar Sorteio</span>
+					<input type="text" id="info-perfil-nome" name="info-perfil-nome" title="Nome do Sorteio" maxlength="100" class="text">
+				</label>
+				<button type="button" id="pesquisar" class="btn secondary wsize015 wsizep100" onclick="send();">Pesquisar</button>
+			</fieldset>
+		</form>
+		<div>
+		<hr>
+			<table id="table-usuario-participantes" cellspacing="0" summary="Lista sorteio cadastrados" class="tableMain responsive-table wsizep100">
+				<caption>Sorteios Cadastrados</caption>
+				<thead>
+					<tr>
+						<th scope="col">Nome do Sorteio</th>
+						<th scope="col" class="actionTable wsize015"><span>Ações</span></th>
+					</tr>
+				</thead>
+				<tbody>
+					{!foreach name=sorteios from=$lista_sorteios key=chave item=sorteios}
+						<tr class="{cycle values='odd,even'}">
+							<td data-title="Nome do Sorteio">{!$sorteios.titulo}</td>
+							<td data-title="Ações" class="actionTable">
+								<a href="sorteioc/cadastroSorteio/{!$sorteios.id}" title="Editar Sorteio" class="edit">Editar</a>
+								<a href="sorteioc/realizaSorteio/{!$sorteios.id}" title="Realizar Sorteio" > <img src="img/star.png">Sortear</a>
+								<a href="sorteioc/participantes/{!$sorteios.id}" title="Lista de Participantes" > <img src="img/to_do_list_cheked_1.png">Lista</a>
+							</td>
+						</tr>
+					{!/foreach}
+				</tbody>
+			</table>
+		</div>
+		<div id="resultado">{!$resultado}</div>
+		<div class="formMain wsizep100">
+			<fieldset class="print">
+				<legend>Ações</legend>
+				<a id="button-perfil-cadastrar" href="sorteioc/cadastroSorteio" title="Novo Sorteio" class="btn primary wsize025 wsizep100">Novo Sorteio</a>
+			</fieldset>
+		</div>
+	</div>
+</div>
+{!$FOOT}

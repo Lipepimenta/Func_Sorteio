@@ -1,0 +1,61 @@
+{!$HEAD}
+{!*include file="default/head.tpl" template_type="report"*}
+	<div id="content">
+		<div id="actions">
+			<h2><span>Cadastro Sorteio</span></h2>
+			<div id="msg" class="msgDefault" {!if $msg == ""} style="display: none;" {!/if}>
+				<div class="{!$classMsg}">
+					<h3>{!if $classMsg == 'msgOk'}Sucesso{!elseif $classMsg == 'msgError'}Erro{!else}Alerta{!/if}</h3>
+					<p>{!if $msg != ''}{!$msg}{!else}&nbsp;{!/if}</p>
+				</div>
+			</div>
+			{!$abas}
+			<div class="tabs-step">
+				<ul id="tabs-transferir">
+					<li class="first past"><span>Dados</span></li>
+					<li class="middle active"><span>Usuários</span></li>
+					<li class="last future"><span>Sorteio</span></li>
+				</ul>
+			</div>
+			<form id="form-sorteio" action="" method="post" class="formMain wsizep100">
+				<fieldset>
+					<legend>Vínculo Usuários</legend>
+					<label for="titulo" class="wsize040 wsizep100">
+						<span class="nameField">Usuários <em class="required" title="Campo Obrigatório">obrigatório</em></span>
+						<input type="text" name="nome" title="Nome usuarios" maxlength="100" class="text normalcase" required>
+						<input type="hidden" name="id_sorteio" id="id_sorteio" value="{!$id_sorteio}">
+					</label>
+					<button type="submit" class="btn secondary wsize015 wsizep100" value="Adicionar Participante" onclick="send('incluir');">incluir</button>
+					<br>
+					<br>
+					<table id="table-usuario-participantes" cellspacing="0" summary="Lista de participantes do sorteio" class="tableMain responsive-table wsizep100">
+						<caption>Participantes do Sorteio</caption>
+						<thead>
+							<tr>
+								<th scope="col">Nome do Usuário</th>
+								<th scope="col" class="actionTable wsize010"><span>Ações</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{!foreach name=participantes from=$obterParticipantesSorteio key=chave item=participante}
+								<tr class="{cycle values='odd,even'}">
+									<td data-title="Nome do Usuário">{!$participante.no_uid}</td>
+									<td data-title="Ações" class="actionTable">
+										<button type="button" onclick="nhJax.Utils.showModalMsgs('confirm', 'msg01_BoxModalConfirm', 'sorteioc/removerParticipanteSorteio/{!$participante.id_sorteio}/{!$participante.no_uid}');" title="Excluir Registro" class="delete">Excluir</button>
+									</td>
+								</tr>
+							{!/foreach}
+
+						</tbody>
+					</table>
+				</fieldset>
+				<fieldset class="print">
+					<legend>Ações</legend>
+					<a href="sorteioc/cadastroSorteio/{!$id_sorteio}/" class="btn secondary wsize015 wsizep100" title="Voltar">Voltar</a>
+					<a href="sorteioc/teste" class="btn secondary wsize025 wsizep100" title="Concluir">Concluir</a>
+					<a href="sorteioc/realizaSorteio/{!$id_sorteio}" class="btn primary wsize025 wsizep100" title="Realizar Sorteio" float="left">Realizar Sorteio</a>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+{!$FOOT}

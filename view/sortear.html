@@ -1,0 +1,52 @@
+{!$HEAD}
+{!*include file="default/head.tpl" template_type="report"*}
+	<div id="content">
+		<div id="actions">
+			<h2><span>Realizar Sorteio</span></h2>
+			<div id="msg" class="msgDefault" {!if $msg == ""} style="display: none;" {!/if}>
+				<div class="{!$classMsg}">
+					<h3>{!if $classMsg == 'msgOk'}Sucesso{!elseif $classMsg == 'msgError'}Erro{!else}Alerta{!/if}</h3>
+					<p>{!if $msg != ''}{!$msg}{!else}&nbsp;{!/if}</p>
+				</div>
+			</div>
+			{!$abas}
+			<div class="tabs-step">
+				<ul id="tabs-transferir">
+					<li class="first past"><span>Dados</span></li>
+					<li class="last future"><span>Usuários</span></li>
+					<li class="middle active"><span>Sorteio</span></li>
+				</ul>
+			</div>
+			<form id="form-sorteio" method="post" action="sorteioc/realizaSorteio/{!$id_sorteio}" class="formMain wsizep100">
+				<fieldset>
+					<legend>Realizar Sorteio</legend>
+				</fieldset>
+				<input type="hidden" name="sortear" value="sortear">
+				<button type="submit" class="btn primary wsize025 wsizep100" value="Adicionar Participante">SORTEAR</button>
+			</form>
+			<form id="form-sorteio" action="" method="post" class="formMain wsizep100">
+				<fieldset>
+					<table id="table-usuario-participantes" cellspacing="0" summary="Lista de participantes premiados" class="tableMain responsive-table wsizep100">
+						<caption>Participantes Premiados</caption>
+						<thead>
+							<tr>
+								<th scope="col">Lista de Participantes Premiados</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!foreach name=participantes from=$obterParticipantesSorteio key=chave item=participante}
+								<tr class="{cycle values='odd,even'}">
+									<td data-title="Nome do Usuário">{!$participante.no_uid}</td>
+								</tr>
+							{!/foreach}
+						</tbody>
+					</table>
+				</fieldset>
+				<fieldset class="print">
+					<legend>Ações</legend>
+					<a href="sorteioc/teste" class="btn primary wsize025 wsizep100" title="Concluir">Finalizar</a>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+{!$FOOT}

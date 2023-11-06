@@ -1,0 +1,107 @@
+{!$HEAD}
+{!*include file="default/head.tpl" template_type="report"*}
+<script>
+function redirecionamento() {
+	document.getElementById('form-sorteio').submit();
+	// Redirecionar para a página de adicionar participantes com o ID do sorteio gerado
+	window.location.href = 'sorteioc/adicionarParticipante?id_sorteio=' + '{!$id_sorteio}';
+}
+//<![CDATA[
+// funcao a ser chamanda na inicializacao
+// validacao do formulario
+var objValidator = new Object();
+nhJax.Utils.ini = function () {
+	objValidator.MsgsStyle = nhMsgs.getMsgStyle();
+	objValidator.objMessages = nhMsgs.getMsgValidacao();
+	objValidator.objMessages.comparaDatasBrasil = 'Data de Início não pode ser superior a Data de Término.';
+	objValidator.Form = new Object({
+		element: $('form-sorteio'),
+		action: '',
+		submit: 1
+	});
+	// 0 nao submite 1 get 2 post
+	objValidator.ObjCampos = new Object([
+		{ id: 'titulo', must: 1 },
+		{ id: 'descricao', must: 1 },
+		{ id: 'data_sorteio', must: 1, func: 'validaData', mask: '##/##/####' },
+	]);
+	nhJax.Utils.formatarElementos(objValidator);
+}
+// obj de mensagens para uso da validacao
+var objMessages = nhMsgs.getMsgValidacao();
+// submit
+function send(tipo_pesquisa) {
+	nhJax.Utils.validaForm(objValidator);
+}
+// starter validacao
+Event.observe(window, 'load', function () {
+	nhJax.Utils.ini();
+	console.log('iniciou');
+});
+//]]>
+</script>
+<div id="content">
+	<div id="actions">
+		<h2><span>Cadastro Sorteio</span></h2>
+		<div id="msg" class="msgDefault" {!if $msg == ""} style="display: none;" {!/if}>
+			<div class="{!$classMsg}">
+				<h3>{!if $classMsg == 'msgOk'}Sucesso{!elseif $classMsg == 'msgError'}Erro{!else}Alerta{!/if}</h3>
+				<p>{!if $msg != ''}{!$msg}{!else}&nbsp;{!/if}</p>
+			</div>
+		</div>
+		<div class="tabs-step">
+			<ul id="tabs-transferir">
+				<li class="first active"><span>Dados</span></li>
+				<li class="middle future"><span>Usuários</span></li>
+				<li class="last future"><span>Sorteio</span></li>
+			</ul>
+		</div>
+		<form id="form-sorteio" action="" method="post" class="formMain wsizep100">
+			<fieldset>
+				<legend>Dados</legend>
+				<label for="titulo" class="wsize060 wsizep100">
+					<span class="nameField">Nome do Sorteio <em class="required" title="Campo Obrigatório">obrigatório</em></span>
+					<input type="text" id="titulo" name="titulo" title="Nome do Sorteio" maxlength="100" class="text normalcase" value="{!$resultadoid.titulo}">
+				</label>
+				<br>
+				<label for="descricao" class="wsize060 wsizep100">
+					<span class="nameField">Descrição<em class="required" title="Campo Obrigatório">obrigatório</em></span>
+					<textarea id="descricao" name="descricao" oninput="nhJax.Utils.countChars(this, 500)" rows="3" class="textarea" title="Descrição do Sorteio" >{!$resultadoid.descricao}</textarea>
+					<span class="infoMsg">Restam <input type="text" class="count" value="500" id="descricao_COUNT" readonly> caracteres</span>
+				</label>
+				<br>
+				<label for="data" class="wsize020 wsizep050">
+					<span class="nameField">Data Sorteio <em class="required" title="Campo Obrigatório">obrigatório</em></span>
+					<input type="text" id="data_sorteio" name="data_sorteio" title="Data Sorteio" maxlength="10" class="text" value="{!$resultadoid.data_sorteio|data_br}">
+				</label>
+				<label class="calendar wsizep001" title="Acionar Calendário">
+					<input type="text" id="data_sorteio-hidden" name="data_sorteio-hidden" value="">
+					<script>
+						var dt_inicial;
+						function startCalendarDay() {
+							dt_inicial = new DatePicker({
+								relative: 'data_sorteio-hidden',
+								keepFieldEmpty: true,
+								disableFutureDate: false,
+								afterClose: function () {
+									$('data_sorteio').value = $('data_sorteio-hidden').value;
+								}
+							});
+						}
+						startCalendarDay();
+					</script>
+				</label>
+			</fieldset>
+			<fieldset class="print">
+				<legend>Ações</legend>
+				{!if $id_sorteio != null}
+					<button type="button" class="btn primary wsize025 wsizep100" value="Avançar" onclick="send('pesquisar-registro');">Avançar</button>
+					{!else}
+					<button type="button" class="btn primary wsize025 wsizep100" value="Cadastrar Sorteio" onclick="send('pesquisar-registro');">Cadastrar Sorteio</button>
+				{!/if}
+				<a href="sorteioc/teste" class="btn secondary wsize015 wsizep100" title="Voltar">Voltar</a>
+			</fieldset>
+		</form>
+	</div>
+</div>
+{!$FOOT}

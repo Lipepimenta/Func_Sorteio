@@ -1,0 +1,45 @@
+{!$HEAD}
+{!*include file="default/head.tpl" template_type="report"*}
+<div id="content">
+    <div id="actions">
+        <h2><span>Lista de Participantes</span></h2>
+        <div id="msg" class="msgDefault" {!if $msg == ""} style="display: none;" {!/if}>
+            <div class="{!$classMsg}">
+                <h3>{!if $classMsg == 'msgOk'}Sucesso{!elseif $classMsg == 'msgError'}Erro{!else}Alerta{!/if}</h3>
+                <p>{!if $msg != ''}{!$msg}{!else}&nbsp;{!/if}</p>
+            </div>
+        </div>
+		<form id="form-sorteio" action="" method="post" class="formMain wsizep100">
+				<fieldset>
+					<table id="table-participantes" cellspacing="0" summary="Lista de participantes" class="tableMain responsive-table wsizep100">
+						<caption>Lista de Participantes</caption>
+						<thead>
+							<tr>
+								<th scope="col">Nome do Participante</th>
+								<th scope="col">Já Ganhou o Sorteio</th>
+							</tr>
+						</thead>
+						<tbody>
+							{!foreach name=participantes from=$obterParticipantesSorteio key=chave item=participante}
+								<tr class="{cycle values='odd,even'}">
+									<td data-title="Nome do Participante">{!$participante.no_uid}</td>
+									<td data-title="Já Ganhou o Sorteio">
+										{!if in_array($participante.no_uid, $listaVencedoresSorteio)}
+											Sim
+										{!else}
+											Não
+										{!/if}
+									</td>
+								</tr>
+							{!/foreach}
+						</tbody>
+					</table>
+				</fieldset>
+				<fieldset class="print">
+					<legend>Ações</legend>
+					<a href="sorteioc/teste/" class="btn secondary wsize015 wsizep100" title="Voltar">Voltar</a>
+				</fieldset>
+			</form>
+    </div>
+</div>
+{!$FOOT}
