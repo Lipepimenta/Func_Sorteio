@@ -1,3 +1,9 @@
+<datalist id="usuariosList">
+    {!foreach name=usuarios from=$obterUsuarios key=chave item=usuario}
+        <option value="{!$usuario.nome}">{!$usuario.nome}</option>
+    {!/foreach}
+</datalist>
+
 {!$HEAD}
 {!*include file="default/head.tpl" template_type="report"*}
 	<div id="content">
@@ -38,14 +44,13 @@
 						</thead>
 						<tbody>
 							{!foreach name=participantes from=$obterParticipantesSorteio key=chave item=participante}
-								<tr class="{cycle values='odd,even'}">
+								<tr class="{!cycle values='odd,even'}">
 									<td data-title="Nome do Usuário">{!$participante.no_uid}</td>
 									<td data-title="Ações" class="actionTable">
 										<button type="button" onclick="nhJax.Utils.showModalMsgs('confirm', 'msg01_BoxModalConfirm', 'sorteioc/removerParticipanteSorteio/{!$participante.id_sorteio}/{!$participante.no_uid}');" title="Excluir Registro" class="delete">Excluir</button>
 									</td>
 								</tr>
 							{!/foreach}
-
 						</tbody>
 					</table>
 				</fieldset>
