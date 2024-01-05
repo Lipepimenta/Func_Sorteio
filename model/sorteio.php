@@ -1,45 +1,79 @@
 <?php
 	class Sorteio extends Model{
-		public function Sorteio(){
+
+		public $id;
+		public $titulo;
+		public $descricao;
+		public $data_criacao;
+		public $data_sorteio;
+		public $status;
+
+		public function load() {
+			$sql = "SELECT * FROM sorteios WHERE id= {$this->id}";
+			$result = $this->conexao->getRow($sql);
+			if (count($result) > 0 && $result) {
+				foreach($result as $c=>$v) {
+					@$this->$c = $v;
+				}
+			}
+			return ((count($result) > 0 ) ? true : false);
+		}
+
+		public function alterar() {
+			$sql = "UPDATE sorteios
+					SET
+						titulo=?,
+						descricao=?,
+						data_criacao=?,
+						data_sorteio=?,
+						status=?
+					WHERE id =?";
+			$params = array(
+				$this->titulo,
+				$this->descricao,
+				$this->data_criacao,
+				$this->data_sorteio,
+				$this->status,
+				$this->id
+			);
+			$stmt = $this->conexao->Prepare($sql);
+			$exec = $this->conexao->execute($stmt, $params);
+			return $exec;
+		}
+
+		public function inserir() {
+			$stmt = $this->conexao->Prepare('INSERT INTO sorteios (titulo, descricao, data_sorteio, status) VALUES(?, ?, ?, ?)');
+			$params = array($this->titulo, $this->descricao, $this->data_sorteio, $this->status);
+			return $this->conexao->Execute($stmt, $params);
+		}
+
+		public function Sorteio() {
 			parent :: Model();
 		}
 
-		function cadastrarSorteio($titulo, $descricao, $data_sorteio, $status) {
-			$status = "ativo";
-			$inserir_sql = "INSERT INTO sorteios (titulo, descricao, data_sorteio, status)
-							VALUES ('$titulo', '$descricao', '$data_sorteio', '$status')";
-			$sql_prepare = $this->conexao->Prepare($inserir_sql);
-			$resultado=$this->conexao->Execute($sql_prepare);
-
-			$id_sorteio = $this->conexao->Insert_ID();
-			return $id_sorteio;
-		}
-
-		function listarSorteios() {
-			$consultaSorteios = "SELECT id, titulo FROM sorteios";
-			$resultadoSorteios = $this->conexao->getAll($consultaSorteios);
-
-			return $resultadoSorteios;
-		}
-
-		function buscarIdSorteio($id_sorteio){
+		function buscarIdSorteio($id_sorteio) {
 			$consultaSorteios = "SELECT * FROM sorteios WHERE id = $id_sorteio";
 			$resultado = $this->conexao->getrow($consultaSorteios);
 
 			return $resultado;
 		}
-		function validaExistenciaSorteio($titulo){
+
+		function validaExistenciaSorteio($titulo) {
 			$consultaSorteios = "SELECT * FROM sorteios WHERE titulo = '$titulo'";
 			$resultado = $this->conexao->getrow($consultaSorteios);
 
 			return $resultado;
 		}
 
-		function validaSorteio($titulo){
-			$consultaSorteios = "SELECT * FROM sorteios WHERE titulo like '%$titulo%'";
-			$resultado = $this->conexao->getAll($consultaSorteios);
+		function listarSorteios($titulo = null) {
+			$sql_cpl = '';
+			if($titulo !== null) {
+				$sql_cpl = "WHERE titulo like '%$titulo%'";
+			}
 
-			return $resultado;
+			$consultaSorteios = "SELECT * FROM sorteios $sql_cpl";
+			$resultadoSorteios = $this->conexao->getAll($consultaSorteios);
+			return $resultadoSorteios;
 		}
 
 		function obterParticipantesSorteio($id_sorteio) {
@@ -51,6 +85,8 @@
 
 				$resultado = $this->conexao->getAll($consulta_sql);
 				return $resultado;
+			}else{
+				return;
 			}
 		}
 
@@ -70,6 +106,8 @@
 									c.id_sorteio = $id_sorteio;";
 				$resultado = $this->conexao->getAll($consulta_sql);
 				return $resultado;
+			}else{
+				return;
 			}
 		}
 
@@ -91,7 +129,7 @@
 			WHERE tb_usuario.no_uid = '$nome' AND candidatos_sorteios.id_sorteio = $id_sorteio";
 
 			$resultado = $this->conexao->getAll($consulta_sql);
-			if (count($resultado)> 0) {
+			if (count($resultado) > 0) {
 				return true; // O participante existe no sorteio
 			}
 			return false; // O participante não existe no sorteio ou valores nulos
@@ -105,7 +143,7 @@
 				$inserir_sql = "INSERT INTO vencedores_sorteios (id_sorteio, no_uid, data_vitoria)
 								VALUES ($id_sorteio, $no_uid, '$data_vitoria')";
 				$sql_prepare = $this->conexao->Prepare($inserir_sql);
-				$resultado=$this->conexao->Execute($sql_prepare);
+				$resultado = $this->conexao->Execute($sql_prepare);
 
 				return $resultado;
 			}
@@ -117,11 +155,11 @@
 			$consulta_resultado = $this->conexao->Execute($consulta_prepare);
 
 			if (!$consulta_resultado) {
-				return; // Ocorreu um erro na consulta
+				return false; // Ocorreu um erro na consulta
 			}
 
 			if ($consulta_resultado->RecordCount() == 0) {
-				return; // O nome do usuário não foi encontrado na tabela tb_usuario
+				return false; // O nome do usuário não foi encontrado na tabela tb_usuario
 			}
 
 			$inserir_sql = "INSERT INTO candidatos_sorteios (no_uid, id_sorteio) VALUES ('$id_pessoa', '$id_sorteio')";
@@ -135,7 +173,7 @@
 					  VALUES ((SELECT no_uid  FROM tb_usuario WHERE no_uid = '$nome_participante'), $id_sorteio, NOW())";
 
 			$sql_prepare = $this->conexao->Prepare($inserir_sql);
-			$resultado=$this->conexao->Execute($sql_prepare);
+			$resultado = $this->conexao->Execute($sql_prepare);
 
 			return $resultado;
 		}
@@ -147,7 +185,7 @@
 				$remover_sql = "DELETE FROM candidatos_sorteios WHERE id_sorteio = $id_sorteio AND no_uid = '$id_usuario'";
 
 				$sql_prepare = $this->conexao->Prepare($remover_sql);
-				$resultado=$this->conexao->Execute($sql_prepare);
+				$resultado = $this->conexao->Execute($sql_prepare);
 
 				return $resultado;
 			} else {
@@ -206,6 +244,5 @@
 				return false; // O sorteio não existe
 			}
 		}
-
 	}
 ?>
